@@ -4,7 +4,7 @@ import 'page1.dart';
 import 'page2.dart';
 import 'page3.dart';
 
-final PageController pageController = PageController();
+final PageController pageController = PageController(initialPage: 2);
 PlatformFile? file;
 String facts = '';
 String pdfText = '';
@@ -50,7 +50,6 @@ class _MyHomePageState extends State<MyHomePage> {
               ))),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // show help dialog in corner
           showDialog(
             context: context,
             builder: (BuildContext context) {

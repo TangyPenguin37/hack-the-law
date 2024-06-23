@@ -12,10 +12,14 @@ class Page3 extends StatelessWidget {
   Future<http.Response> _fetchData() async {
     await Future.delayed(const Duration(seconds: 3));
     return http.post(
-      Uri.http('127.0.0.1:8000', '/req'),
+      Uri.http('127.0.0.1:8000', '/analyse'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({"username": 'string'}),
+      body: jsonEncode({"facts": text, "file": pdfText}),
     );
+  }
+
+  Future delayText() async {
+    await Future.delayed(const Duration(seconds: 3));
   }
 
   @override
@@ -25,32 +29,102 @@ class Page3 extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.hasData) {
-            final summary = jsonDecode(snapshot.data!.body)['summary'];
-            final similar = jsonDecode(snapshot.data!.body)['similar'];
-            return _buildContent(summary, similar);
+            final decoded = jsonDecode(utf8.decode(snapshot.data!.bodyBytes));
+            return _buildContent("temp", context, decoded);
           } else if (snapshot.hasError) {
             return const Center(child: Text('Error!'));
           }
         }
-        return const Center(
-          child: CircularProgressIndicator(color: Colors.white),
-        );
+        return Center(
+            child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const CircularProgressIndicator(color: Colors.white),
+            const SizedBox(height: 20),
+            const Text('Analyzing...', style: TextStyle(color: Colors.white)),
+            // show "this may take a while..." after 5 seconds
+            FutureBuilder(
+                future: delayText(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    return const Text('This may take a while...',
+                        style: TextStyle(color: Colors.white));
+                  }
+                  return const SizedBox.shrink();
+                })
+          ],
+        ));
       },
     );
   }
 
-  Widget _buildContent(String summary, String similar) {
+  Widget _buildContent(String summary, BuildContext context, decoded) {
+    List<Widget> similarText = [];
+
+    final List<dynamic> similar = decoded["cases"];
+    final String summary_witness = decoded["summary_witness"];
+    final String summary_nda = decoded["summary_nda"];
+    final String cross_compare = decoded["cross_compare"];
+
+    similarText.add(Text('Similar Cases:', style: _textStyle(30)));
+
+    for (var i = 0; i < similar.length; i++) {
+      similarText.add(Text(
+          (similar[i]["output"] as String)
+              .replaceAll("\n\n", "///")
+              .replaceAll("\n", " ")
+              .replaceAll("///", "\n\n"),
+          style: _textStyle(20)));
+    }
+
+    similarText.add(
+        Text("\n\nSummary of Witness Statement:\n\n", style: _textStyle(30)));
+
+    similarText.add(Text(
+        summary_witness
+            .replaceAll("\n\n", "///")
+            .replaceAll("\n", " ")
+            .replaceAll("///", "\n\n"),
+        style: _textStyle(20)));
+
+    similarText.add(Text("\n\nSummary of NDA:\n\n", style: _textStyle(30)));
+
+    similarText.add(Text(
+        summary_nda
+            .replaceAll("\n\n", "///")
+            .replaceAll("\n", " ")
+            .replaceAll("///", "\n\n"),
+        style: _textStyle(20)));
+
+    similarText.add(Text("\n\nCross Comparison:\n\n", style: _textStyle(30)));
+
+    similarText.add(Text(
+        cross_compare
+            .replaceAll("\n\n", "///")
+            .replaceAll("\n", " ")
+            .replaceAll("///", "\n\n"),
+        style: _textStyle(20)));
+
     return Center(
+        child: Padding(
+      padding: const EdgeInsets.all(20),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Text('Summary: $summary', style: _textStyle()),
-          Text('Similar Text Found: $similar', style: _textStyle()),
+          Text('Analysis:', style: _textStyle(40)),
+          SizedBox(height: 20),
+          SizedBox(
+            // set to screen height - 200
+            height: MediaQuery.of(context).size.height - 200,
+            child: SingleChildScrollView(
+              child: Column(children: similarText),
+            ),
+          )
         ],
       ),
-    );
+    ));
   }
 
-  TextStyle _textStyle() => GoogleFonts.roboto(
-      textStyle: const TextStyle(fontSize: 20, color: Colors.white));
+  TextStyle _textStyle(double fontsize) => GoogleFonts.roboto(
+      textStyle: TextStyle(fontSize: fontsize, color: Colors.white));
 }

@@ -23,7 +23,7 @@ class Page1 extends StatelessWidget {
                   duration: const Duration(seconds: 1), curve: Curves.ease);
             }
           },
-          child: const Text('Pick a file'),
+          child: const Text('Pick a file to upload'),
         ),
       ],
     );
