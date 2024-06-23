@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -86,6 +87,13 @@ class Page3 extends StatelessWidget {
             .replaceAll("\n", " ")
             .replaceAll("///", "\n\n"),
         style: _textStyle(20)));
+
+    // similarText.add(MarkdownBody(data: summary_witness));
+    // make markdown white
+    // similarText.add(MarkdownBody(
+    //     data: summary_witness,
+    //     styleSheet:
+    //         MarkdownStyleSheet(p: _textStyle(20), blockquote: _textStyle(20))));
 
     similarText.add(Text("\n\nSummary of NDA:\n\n", style: _textStyle(30)));
 
