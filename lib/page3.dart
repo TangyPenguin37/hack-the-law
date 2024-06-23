@@ -20,7 +20,7 @@ class Page3 extends StatelessWidget {
   }
 
   Future delayText() async {
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 4));
   }
 
   @override
@@ -43,7 +43,6 @@ class Page3 extends StatelessWidget {
             const CircularProgressIndicator(color: Colors.white),
             const SizedBox(height: 20),
             const Text('Analyzing...', style: TextStyle(color: Colors.white)),
-            // show "this may take a while..." after 5 seconds
             FutureBuilder(
                 future: delayText(),
                 builder: (context, snapshot) {
@@ -60,17 +59,35 @@ class Page3 extends StatelessWidget {
   }
 
   Widget _buildContent(String summary, BuildContext context, decoded) {
-    List<Widget> similarText = [];
+    List<Widget> results = [];
 
     final List<dynamic> similar = decoded["cases"];
-    final String summary_witness = decoded["summary_witness"];
-    final String summary_nda = decoded["summary_nda"];
-    final String cross_compare = decoded["cross_compare"];
+    final String summaryWitness = decoded["summary_witness"];
+    final String summaryNda = decoded["summary_nda"];
+    final String crossCompare = decoded["cross_compare"];
 
-    similarText.add(Text('Similar Cases:', style: _textStyle(30)));
+    MarkdownStyleSheet style = MarkdownStyleSheet(
+        p: _textStyle(20),
+        blockquote: _textStyle(20),
+        h1: _textStyle(20),
+        h2: _textStyle(20),
+        h3: _textStyle(20),
+        h4: _textStyle(20),
+        h5: _textStyle(20),
+        h6: _textStyle(20));
+
+    results.add(
+        Text("\n\nSummary of Witness Statement:\n\n", style: _textStyle(30)));
+
+    results.add(MarkdownBody(data: summaryWitness, styleSheet: style));
+    results.add(Text("\n\nSummary of NDA:\n\n", style: _textStyle(30)));
+    results.add(MarkdownBody(data: summaryNda, styleSheet: style));
+    results.add(Text("\n\nCross Comparison:\n\n", style: _textStyle(30)));
+    results.add(MarkdownBody(data: crossCompare, styleSheet: style));
+    results.add(Text('Similar Cases:', style: _textStyle(30)));
 
     for (var i = 0; i < similar.length; i++) {
-      similarText.add(Text(
+      results.add(Text(
           (similar[i]["output"] as String)
               .replaceAll("\n\n", "///")
               .replaceAll("\n", " ")
@@ -78,54 +95,24 @@ class Page3 extends StatelessWidget {
           style: _textStyle(20)));
     }
 
-    similarText.add(
-        Text("\n\nSummary of Witness Statement:\n\n", style: _textStyle(30)));
-
-    similarText.add(Text(
-        summary_witness
-            .replaceAll("\n\n", "///")
-            .replaceAll("\n", " ")
-            .replaceAll("///", "\n\n"),
-        style: _textStyle(20)));
-
-    // similarText.add(MarkdownBody(data: summary_witness));
-    // make markdown white
-    // similarText.add(MarkdownBody(
-    //     data: summary_witness,
-    //     styleSheet:
-    //         MarkdownStyleSheet(p: _textStyle(20), blockquote: _textStyle(20))));
-
-    similarText.add(Text("\n\nSummary of NDA:\n\n", style: _textStyle(30)));
-
-    similarText.add(Text(
-        summary_nda
-            .replaceAll("\n\n", "///")
-            .replaceAll("\n", " ")
-            .replaceAll("///", "\n\n"),
-        style: _textStyle(20)));
-
-    similarText.add(Text("\n\nCross Comparison:\n\n", style: _textStyle(30)));
-
-    similarText.add(Text(
-        cross_compare
-            .replaceAll("\n\n", "///")
-            .replaceAll("\n", " ")
-            .replaceAll("///", "\n\n"),
-        style: _textStyle(20)));
-
     return Center(
         child: Padding(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(60),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Text('Analysis:', style: _textStyle(40)),
-          SizedBox(height: 20),
+          Text('Analysis:',
+              style: GoogleFonts.roboto(
+                  textStyle: const TextStyle(
+                      fontSize: 40,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold))),
+          // const SizedBox(height: 20),
           SizedBox(
             // set to screen height - 200
             height: MediaQuery.of(context).size.height - 200,
             child: SingleChildScrollView(
-              child: Column(children: similarText),
+              child: Column(children: results),
             ),
           )
         ],

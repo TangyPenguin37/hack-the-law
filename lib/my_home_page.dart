@@ -30,7 +30,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   end: Alignment.bottomRight,
                   colors: [
                     Colors.blue.shade900,
-                    Colors.purpleAccent,
+                    Colors.black,
                   ],
                 ),
               ),
@@ -56,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
               return AlertDialog(
                 title: const Text('Help'),
                 content: const Text(
-                    'This app allows you to upload a PDF file and enter the facts of a case. It will then extract the text from the PDF and display it on the next page.'),
+                    'This app allows you to upload a PDF file and enter the facts of a case. It will then provide you with a summary of the facts and uploaded file, along with a comparison of the discrepancies and examples of similar cases.'),
                 actions: <Widget>[
                   TextButton(
                     onPressed: () {
