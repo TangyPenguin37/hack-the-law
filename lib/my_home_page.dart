@@ -4,7 +4,7 @@ import 'page1.dart';
 import 'page2.dart';
 import 'page3.dart';
 
-final PageController pageController = PageController(initialPage: 2);
+final PageController pageController = PageController(initialPage: 0);
 PlatformFile? file;
 String facts = '';
 String pdfText = '';

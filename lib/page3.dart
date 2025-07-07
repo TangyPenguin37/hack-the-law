@@ -91,7 +91,8 @@ class Page3 extends StatelessWidget {
           (similar[i]["output"] as String)
               .replaceAll("\n\n", "///")
               .replaceAll("\n", " ")
-              .replaceAll("///", "\n\n"),
+              .replaceAll("///", "\n\n")
+              .replaceAll("This case", "\n\nThis case"),
           style: _textStyle(20)));
     }
 
